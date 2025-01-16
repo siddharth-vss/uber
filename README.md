@@ -83,6 +83,46 @@ $ npx prisma generate
 
 The database connection URL and other environment variables are defined in the `.env` file.
 
+## Database Tables and Models
+
+The database schema is defined using Prisma models in the `prisma/schema.prisma` file. Below are the main models and their corresponding tables:
+
+### User Model
+
+The `User` model represents the users of the application. It is mapped to the `User` table in the database.
+
+```prisma
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  email          String       @unique
+  password_hash  String
+  source         String
+  socketId       String
+  posts          Post[]
+}
+```
+
+### Post Model
+
+The `Post` model represents the posts created by users. It is mapped to the `Post` table in the database.
+
+```prisma
+model Post {
+  id        Int      @default(autoincrement()) @id
+  title     String
+  content   String?
+  published Boolean? @default(false)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  String?
+}
+```
+
+### Relationships
+
+- A `User` can have multiple `Post` entries (one-to-many relationship).
+- Each `Post` is associated with a single `User` (many-to-one relationship).
+
 ## Environment Variables
 
 The `.env` file contains the environment variables required for the application. The following variables are used:
