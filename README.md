@@ -58,6 +58,42 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Prisma
+
+This project uses Prisma as the ORM (Object-Relational Mapping) tool. Prisma helps in managing the database schema and performing database operations.
+
+### Prisma Schema
+
+The Prisma schema is defined in the `prisma/schema.prisma` file. It includes the data models and their relations.
+
+### Migrations
+
+Database migrations are managed using Prisma Migrate. The migration files are located in the `prisma/migrations` directory.
+
+### Prisma Client
+
+The Prisma Client is generated based on the schema and is used to interact with the database. It is generated in the `node_modules/.prisma/client` directory.
+
+To generate the Prisma Client, run:
+```bash
+$ npx prisma generate
+```
+
+### Environment Variables
+
+The database connection URL and other environment variables are defined in the `.env` file.
+
+## Environment Variables
+
+The `.env` file contains the environment variables required for the application. The following variables are used:
+
+- `DATABASE_URL`: The connection URL for the PostgreSQL database.
+
+Example `.env` file:
+```properties
+DATABASE_URL='postgresql://username:password@host:port/database?sslmode=require'
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
