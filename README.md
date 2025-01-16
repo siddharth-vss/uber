@@ -70,6 +70,16 @@ The Prisma schema is defined in the `prisma/schema.prisma` file. It includes the
 
 Database migrations are managed using Prisma Migrate. The migration files are located in the `prisma/migrations` directory.
 
+To create a new migration, run:
+```bash
+$ npx prisma migrate dev --name <migration_name>
+```
+
+To apply pending migrations, run:
+```bash
+$ npx prisma migrate deploy
+```
+
 ### Prisma Client
 
 The Prisma Client is generated based on the schema and is used to interact with the database. It is generated in the `node_modules/.prisma/client` directory.
@@ -83,6 +93,12 @@ $ npx prisma generate
 
 The database connection URL and other environment variables are defined in the `.env` file.
 
+#### Example `.env` file
+
+```properties
+DATABASE_URL='postgresql://username:password@host:port/database?sslmode=require'
+```
+
 ## Database Tables and Models
 
 The database schema is defined using Prisma models in the `prisma/schema.prisma` file. Below are the main models and their corresponding tables:
@@ -94,34 +110,111 @@ The `User` model represents the users of the application. It is mapped to the `U
 ```prisma
 model User {
   id             String       @id @default(uuid())
-  name           String
+  fullname       Json         // JSON field to store { firstname, lastname }
   email          String       @unique
   password_hash  String
   source         String
   socketId       String
-  posts          Post[]
+  rides          Ride[]
 }
 ```
 
-### Post Model
+### Captain Model
 
-The `Post` model represents the posts created by users. It is mapped to the `Post` table in the database.
+The `Captain` model represents the captains (drivers) of the application. It is mapped to the `Captain` table in the database.
 
 ```prisma
-model Post {
-  id        Int      @default(autoincrement()) @id
-  title     String
-  content   String?
-  published Boolean? @default(false)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String?
+model Captain {
+  id             String       @id @default(uuid())
+  fullname       Json         // JSON field to store { firstname, lastname }
+  email          String       @unique
+  password_hash  String
+  source         String
+  socketId       String
+  status         Status       @default(inactive)
+  vehicle        Json
+  location       Json
+  rides          Ride[]
 }
 ```
 
-### Relationships
+### BlacklistToken Model
 
-- A `User` can have multiple `Post` entries (one-to-many relationship).
-- Each `Post` is associated with a single `User` (many-to-one relationship).
+The `BlacklistToken` model represents tokens that have been blacklisted. It is mapped to the `BlacklistToken` table in the database.
+
+```prisma
+model BlacklistToken {
+  id          String       @id @default(uuid())
+  token       String       @unique
+  createdAt   DateTime     @default(now())
+}
+```
+
+### Ride Model
+
+The `Ride` model represents the rides in the application. It is mapped to the `Ride` table in the database.
+
+```prisma
+model Ride {
+  id             String       @id @default(uuid())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         String
+  captain        Captain      @relation(fields: [captainId], references: [id])
+  captainId      String
+  pickup         String
+  destination    String
+  fare           Int
+  status         RideStatus   @default(pending)
+  duration       Int
+  distance       Int
+  paymentId      String
+  orderId        String
+  signature      String
+  createdAt      DateTime     @default(now())
+  otp            String
+}
+```
+
+### Enums
+
+The schema also defines several enums used in the models.
+
+#### Status Enum
+
+Represents the status of a captain.
+
+```prisma
+enum Status {
+  active
+  inactive
+}
+```
+
+#### RideStatus Enum
+
+Represents the status of a ride.
+
+```prisma
+enum RideStatus {
+  pending
+  accepted
+  ongoing
+  completed
+  cancelled
+}
+```
+
+#### VehicleType Enum
+
+Represents the type of vehicle.
+
+```prisma
+enum VehicleType {
+  car
+  bike
+  auto
+}
+```
 
 ## UserService
 
@@ -240,24 +333,13 @@ export class UserController {
 }
 ```
 
-## Environment Variables
-
-The `.env` file contains the environment variables required for the application. The following variables are used:
-
-- `DATABASE_URL`: The connection URL for the PostgreSQL database.
-
-Example `.env` file:
-```properties
-DATABASE_URL='postgresql://username:password@host:port/database?sslmode=require'
-```
-
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
 ## Stay in touch
 
-- Author of Nest- [Kamil Myśliwiec](https://kamilmysliwiec.com)
+- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
 - Website - [https://nestjs.com](https://nestjs.com/)
 - Twitter - [@nestframework](https://twitter.com/nestframework)
 
