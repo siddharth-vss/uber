@@ -333,6 +333,106 @@ export class UserController {
 }
 ```
 
+## Users Route
+
+The `UserController` handles the routes related to users. Below are the available routes and their descriptions:
+
+### GET /users
+
+Fetches all users.
+
+```typescript
+@Get()
+getUsers(): string {
+  return 'Get all users';
+}
+```
+
+### GET /users/profile
+
+Fetches the profile of the currently logged-in user.
+
+```typescript
+@Get('/profile')
+getUser() {
+  return `Get user with id: `;
+}
+```
+
+### GET /users/logout
+
+Logs out the currently logged-in user.
+
+```typescript
+@Get('/logout')
+logoutUser() {
+  return `Get user with id: `;
+}
+```
+
+### POST /users/login
+
+Logs in a user with the provided email and password.
+
+```typescript
+@Post('/login')
+loginUser() {
+  return `Login user with email: `;
+}
+```
+
+### POST /users/register
+
+Registers a new user with the provided email and password.
+
+```typescript
+@Post('/register')
+registerUser() {
+  return `Register user with email: `;
+}
+```
+
+### Example Usage
+
+Here is an example of how to use the `UserController` in a client:
+
+```typescript
+import axios from 'axios';
+
+const baseUrl = 'http://localhost:3000/users';
+
+// Fetch all users
+axios.get(baseUrl).then(response => {
+  console.log(response.data);
+});
+
+// Fetch user profile
+axios.get(`${baseUrl}/profile`).then(response => {
+  console.log(response.data);
+});
+
+// Logout user
+axios.get(`${baseUrl}/logout`).then(response => {
+  console.log(response.data);
+});
+
+// Login user
+axios.post(`${baseUrl}/login`, {
+  email: 'user@example.com',
+  password: 'password123'
+}).then(response => {
+  console.log(response.data);
+});
+
+// Register user
+axios.post(`${baseUrl}/register`, {
+  email: 'newuser@example.com',
+  password: 'password123'
+}).then(response => {
+  console.log(response.data);
+});
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
