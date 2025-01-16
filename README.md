@@ -123,6 +123,123 @@ model Post {
 - A `User` can have multiple `Post` entries (one-to-many relationship).
 - Each `Post` is associated with a single `User` (many-to-one relationship).
 
+## UserService
+
+The `UserService` is responsible for handling operations related to users. It uses the Prisma Client to interact with the database.
+
+### Methods
+
+#### `user`
+
+Fetches a single user by a unique identifier.
+
+```typescript
+async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null>
+```
+
+- **Parameters**: `userWhereUniqueInput` - An object containing the unique identifier of the user.
+- **Returns**: A `User` object if found, otherwise `null`.
+
+#### `users`
+
+Fetches multiple users based on the provided parameters.
+
+```typescript
+async users(params: {
+  skip?: number;
+  take?: number;
+  cursor?: Prisma.UserWhereUniqueInput;
+  where?: Prisma.UserWhereInput;
+  orderBy?: Prisma.UserOrderByWithRelationInput;
+}): Promise<User[]>
+```
+
+- **Parameters**:
+  - `skip` (optional): Number of records to skip.
+  - `take` (optional): Number of records to fetch.
+  - `cursor` (optional): Cursor for pagination.
+  - `where` (optional): Filter conditions.
+  - `orderBy` (optional): Sorting order.
+- **Returns**: An array of `User` objects.
+
+#### `createUser`
+
+Creates a new user.
+
+```typescript
+async createUser(data: Prisma.UserCreateInput): Promise<User>
+```
+
+- **Parameters**: `data` - An object containing the user data.
+- **Returns**: The created `User` object.
+
+#### `updateUser`
+
+Updates an existing user.
+
+```typescript
+async updateUser(params: {
+  where: Prisma.UserWhereUniqueInput;
+  data: Prisma.UserUpdateInput;
+}): Promise<User>
+```
+
+- **Parameters**:
+  - `where`: An object containing the unique identifier of the user to be updated.
+  - `data`: An object containing the updated user data.
+- **Returns**: The updated `User` object.
+
+#### `deleteUser`
+
+Deletes a user.
+
+```typescript
+async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User>
+```
+
+- **Parameters**: `where` - An object containing the unique identifier of the user to be deleted.
+- **Returns**: The deleted `User` object.
+
+### Example Usage
+
+Here is an example of how to use the `UserService` in a controller:
+
+```typescript
+import { Controller, Get, Param, Post, Body, Put, Delete } from '@nestjs/common';
+import { UserService } from './services/user.service';
+import { User } from '@prisma/client';
+
+@Controller('users')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
+
+  @Get(':id')
+  async getUser(@Param('id') id: string): Promise<User | null> {
+    return this.userService.user({ id });
+  }
+
+  @Get()
+  async getUsers(): Promise<User[]> {
+    return this.userService.users({});
+  }
+
+  @Post()
+  async createUser(@Body() userData: { name: string; email: string; password_hash: string; source: string; socketId: string }): Promise<User> {
+    return this.userService.createUser(userData);
+  }
+
+  @Put(':id')
+  async updateUser(@Param('id') id: string, @Body() userData: { name?: string; email?: string; password_hash?: string; source?: string; socketId?: string }): Promise<User> {
+    return this.userService.updateUser({ where: { id }, data: userData });
+  }
+
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string): Promise<User> {
+    return this.userService.deleteUser({ id });
+  }
+}
+```
+
 ## Environment Variables
 
 The `.env` file contains the environment variables required for the application. The following variables are used:
@@ -140,7 +257,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+- Author of Nest- [Kamil Myśliwiec](https://kamilmysliwiec.com)
 - Website - [https://nestjs.com](https://nestjs.com/)
 - Twitter - [@nestframework](https://twitter.com/nestframework)
 
