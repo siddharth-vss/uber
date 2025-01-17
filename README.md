@@ -28,11 +28,15 @@
 
 ## Installation
 
+To install the dependencies, run:
+
 ```bash
 $ npm install
 ```
 
 ## Running the app
+
+To start the application in different modes, use the following commands:
 
 ```bash
 # development
@@ -46,6 +50,8 @@ $ npm run start:prod
 ```
 
 ## Test
+
+To run tests, use the following commands:
 
 ```bash
 # unit tests
@@ -216,181 +222,110 @@ enum VehicleType {
 }
 ```
 
-## UserService
+## API Endpoints
 
-The `UserService` is responsible for handling operations related to users. It uses the Prisma Client to interact with the database.
-
-### Methods
-
-#### `user`
-
-Fetches a single user by a unique identifier.
-
-```typescript
-async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null>
-```
-
-- **Parameters**: `userWhereUniqueInput` - An object containing the unique identifier of the user.
-- **Returns**: A `User` object if found, otherwise `null`.
-
-#### `users`
-
-Fetches multiple users based on the provided parameters.
-
-```typescript
-async users(params: {
-  skip?: number;
-  take?: number;
-  cursor?: Prisma.UserWhereUniqueInput;
-  where?: Prisma.UserWhereInput;
-  orderBy?: Prisma.UserOrderByWithRelationInput;
-}): Promise<User[]>
-```
-
-- **Parameters**:
-  - `skip` (optional): Number of records to skip.
-  - `take` (optional): Number of records to fetch.
-  - `cursor` (optional): Cursor for pagination.
-  - `where` (optional): Filter conditions.
-  - `orderBy` (optional): Sorting order.
-- **Returns**: An array of `User` objects.
-
-#### `createUser`
-
-Creates a new user.
-
-```typescript
-async createUser(data: Prisma.UserCreateInput): Promise<User>
-```
-
-- **Parameters**: `data` - An object containing the user data.
-- **Returns**: The created `User` object.
-
-#### `updateUser`
-
-Updates an existing user.
-
-```typescript
-async updateUser(params: {
-  where: Prisma.UserWhereUniqueInput;
-  data: Prisma.UserUpdateInput;
-}): Promise<User>
-```
-
-- **Parameters**:
-  - `where`: An object containing the unique identifier of the user to be updated.
-  - `data`: An object containing the updated user data.
-- **Returns**: The updated `User` object.
-
-#### `deleteUser`
-
-Deletes a user.
-
-```typescript
-async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User>
-```
-
-- **Parameters**: `where` - An object containing the unique identifier of the user to be deleted.
-- **Returns**: The deleted `User` object.
-
-### Example Usage
-
-Here is an example of how to use the `UserService` in a controller:
-
-```typescript
-import { Controller, Get, Param, Post, Body, Put, Delete } from '@nestjs/common';
-import { UserService } from './services/user.service';
-import { User } from '@prisma/client';
-
-@Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Get(':id')
-  async getUser(@Param('id') id: string): Promise<User | null> {
-    return this.userService.user({ id });
-  }
-
-  @Get()
-  async getUsers(): Promise<User[]> {
-    return this.userService.users({});
-  }
-
-  @Post()
-  async createUser(@Body() userData: { name: string; email: string; password_hash: string; source: string; socketId: string }): Promise<User> {
-    return this.userService.createUser(userData);
-  }
-
-  @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() userData: { name?: string; email?: string; password_hash?: string; source?: string; socketId?: string }): Promise<User> {
-    return this.userService.updateUser({ where: { id }, data: userData });
-  }
-
-  @Delete(':id')
-  async deleteUser(@Param('id') id: string): Promise<User> {
-    return this.userService.deleteUser({ id });
-  }
-}
-```
-
-## Users Route
+### User Routes
 
 The `UserController` handles the routes related to users. Below are the available routes and their descriptions:
 
-### GET /users
+- **GET /users**
 
-Fetches all users.
+  Fetches all users.
 
-```typescript
-@Get()
-getUsers(): string {
-  return 'Get all users';
-}
-```
+  ```typescript
+  @Get()
+  getUsers(): string {
+    return 'Get all users';
+  }
+  ```
 
-### GET /users/profile
+- **GET /users/profile**
 
-Fetches the profile of the currently logged-in user.
+  Fetches the profile of the currently logged-in user.
 
-```typescript
-@Get('/profile')
-getUser() {
-  return `Get user with id: `;
-}
-```
+  ```typescript
+  @Get('profile')
+  getUser() {
+    return `Get user with id: `;
+  }
+  ```
 
-### GET /users/logout
+- **GET /users/logout**
 
-Logs out the currently logged-in user.
+  Logs out the currently logged-in user.
 
-```typescript
-@Get('/logout')
-logoutUser() {
-  return `Get user with id: `;
-}
-```
+  ```typescript
+  @Get('logout')
+  logoutUser() {
+    return `Get user with id: `;
+  }
+  ```
 
-### POST /users/login
+- **POST /users/login**
 
-Logs in a user with the provided email and password.
+  Logs in a user with the provided email and password.
 
-```typescript
-@Post('/login')
-loginUser() {
-  return `Login user with email: `;
-}
-```
+  ```typescript
+  @Post('login')
+  async loginUser(@Body() data: Login) {
+    return await this.userService.login(data);
+  }
+  ```
 
-### POST /users/register
+  #### Request Body
 
-Registers a new user with the provided email and password.
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "password123"
+  }
+  ```
 
-```typescript
-@Post('/register')
-registerUser() {
-  return `Register user with email: `;
-}
-```
+  #### Login Interface
+
+  ```typescript
+  export interface Login {
+    email: string;
+    password: string;
+  }
+  ```
+
+- **POST /users/register**
+
+  Registers a new user with the provided email and password.
+
+  ```typescript
+  @Post('register')
+  async registerUser(@Body() data: Register) {
+    return await this.userService.register(data);
+  }
+  ```
+
+  #### Request Body
+
+  ```json
+  {
+    "email": "newuser@example.com",
+    "password": "password123",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "socketId": "optionalSocketId"
+  }
+  ```
+
+  #### Register Interface
+
+  ```typescript
+  export interface Register extends Login {
+    fullname: {
+      firstname: string;
+      lastname?: string;
+    };
+    socketId?: string;
+  }
+  ```
 
 ### Example Usage
 
@@ -433,11 +368,87 @@ axios.post(`${baseUrl}/register`, {
 });
 ```
 
+## UserService
+
+The `UserService` is responsible for handling operations related to users. It uses the Prisma Client to interact with the database.
+
+### Methods
+
+- **createUser**
+
+  Creates a new user.
+
+  ```typescript
+  async createUser(user: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({ data: user });
+  }
+  ```
+
+- **register**
+
+  Registers a new user.
+
+  ```typescript
+  async register(data: Register) {
+    // Implementation
+  }
+  ```
+
+- **login**
+
+  Logs in a user.
+
+  ```typescript
+  async login(data: Login) {
+    // Implementation
+  }
+  ```
+
+- **getAllUsers**
+
+  Fetches all users.
+
+  ```typescript
+  async getAllUsers(): Promise<User[]> {
+    return this.prisma.user.findMany();
+  }
+  ```
+
+- **getUserById**
+
+  Fetches a user by ID.
+
+  ```typescript
+  async getUserById(id: string): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+  ```
+
+- **updateUser**
+
+  Updates a user.
+
+  ```typescript
+  async updateUser(id: string, user: Prisma.UserUpdateInput): Promise<User> {
+    return this.prisma.user.update({ where: { id }, data: user });
+  }
+  ```
+
+- **deleteUser**
+
+  Deletes a user.
+
+  ```typescript
+  async deleteUser(id: string): Promise<User> {
+    return this.prisma.user.delete({ where: { id } });
+  }
+  ```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+## Stay in Touch
 
 - Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
 - Website - [https://nestjs.com](https://nestjs.com/)
