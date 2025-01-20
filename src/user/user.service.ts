@@ -16,7 +16,6 @@ const ind = [
   '.kqjdgqheweekhoikjn',
   '.qerihgq[ebpmi];jkqerfb',
 ];
-const SECREATE = '$!c|c|#@Rt|-|';
 
 export interface Login {
   email: string;
@@ -61,7 +60,7 @@ export class UserService {
         },
       });
       console.log(newUser.id);
-      const token = sign({_id : newUser.id}, SECREATE);
+      const token = sign({_id : newUser.id}, process.env.JWT_SECRET);
       return { token, newUser };
     } catch (error) {
       console.log(error);
@@ -80,7 +79,7 @@ export class UserService {
             if (!match) {
                 return HttpStatus.BAD_REQUEST;
             }
-            const token = sign({ _id: user.id }, SECREATE);
+            const token = sign({ _id: user.id }, process.env.JWT_SECRET);
             return { token, user };
     } catch (error) {
         console.log(error);
@@ -93,11 +92,11 @@ export class UserService {
   }
 
   async getUserById(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id : id } });
   }
 
   async updateUser(id: string, user: Prisma.UserUpdateInput): Promise<User> {
-    return this.prisma.user.update({ where: { id }, data: user });
+    return this.prisma.user.update({ where: { id : id }, data: user });
   }
 
   async deleteUser(id: string): Promise<User> {
