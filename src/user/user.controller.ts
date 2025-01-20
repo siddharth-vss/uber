@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { Login, Register, UserService } from './user.service';
 import { AuthService } from 'src/services/auth.service';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -14,13 +14,12 @@ export class UserController {
 
   @Get('profile')
   getUser(@Req() req: Request) {
-    const user = req.user;
-    return `Get user with id: ${user?.id || 'undefined'}`;
+    return (req.user);
   }
 
   @Get('logout')
-  logoutUser() {
-    return `Get user with id: `;
+  async logoutUser(@Req() req: Request , @Res() res :Response) {
+    return await this.userService.logoutUser(req,res);
   }
 
   @Post('login')
@@ -30,7 +29,6 @@ export class UserController {
 
   @Post('register')
   async registerUser(@Body() data: Register) {
-    console.log(data);
     return await this.userService.register(data);
   }
 }

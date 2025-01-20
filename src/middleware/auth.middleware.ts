@@ -13,7 +13,7 @@ export class AuthUser implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-    console.log(`Middleware triggered: ${req.method} ${req.path}`);
+    // console.log(`Middleware triggered: ${req.method} ${req.path}`);
 
     if (!token) {
       res.status(401).json({ message: 'Unauthorized' });
@@ -34,7 +34,6 @@ export class AuthUser implements NestMiddleware {
         throw new Error('User not found');
       }
       req.user = user;
-      console.log(req.user, 'User');
       next();
     } catch (error) {
       res.status(401).json({ message: 'Unauthorized' });
